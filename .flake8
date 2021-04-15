@@ -1,0 +1,14 @@
+[flake8]
+ignore = E203, E501, W503,  # handled by black
+
+exclude =
+    *_venv
+    venv_*
+    venv
+max-cognitive-complexity = 10
+per-file-ignores =
+    test*.py: S101
+    # Skip unused imports in __init__ files
+    __init__.py: F401
+
+doctests = True
