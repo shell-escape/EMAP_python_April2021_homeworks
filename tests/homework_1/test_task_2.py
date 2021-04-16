@@ -1,4 +1,4 @@
-from homework_1.tasks.task_2 import check_fibonacci
+from homework_1.task_2 import check_fibonacci
 
 
 def test_one_int_positive_case():

@@ -1,6 +1,6 @@
 from tempfile import NamedTemporaryFile
 
-from homework_1.tasks.task_3 import find_maximum_and_minimum
+from homework_1.task_3 import find_maximum_and_minimum
 
 
 def test_one_int_case():

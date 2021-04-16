@@ -13,8 +13,16 @@ from typing import List
 
 
 def find_maximal_subarray_sum(nums: List[int], k: int) -> int:
-    """Find a sub-array with length less equal to "k", with maximal sum.
-    Based on Kadane's algorithm [https://en.wikipedia.org/wiki/Maximum_subarray_problem]"""
+    """Find the miximal sum of sub-array with length less equal to "k".
+       Based on Kadane's algorithm [https://en.wikipedia.org/wiki/Maximum_subarray_problem]
+
+    Args:
+        nums (List[int]): list of integers
+        k (int): sub-array length
+
+    Returns:
+        int: the maximal sum
+    """
     best_sum = float("-inf")
     current_sum = 0
     for current_end, num in enumerate(nums):

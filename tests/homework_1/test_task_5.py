@@ -1,4 +1,4 @@
-from homework_1.tasks.task_5 import find_maximal_subarray_sum
+from homework_1.task_5 import find_maximal_subarray_sum
 
 
 def test_example_case():

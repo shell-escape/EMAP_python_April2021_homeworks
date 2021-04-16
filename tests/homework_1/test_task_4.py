@@ -1,4 +1,4 @@
-from homework_1.tasks.task_4 import check_sum_of_four
+from homework_1.task_4 import check_sum_of_four
 
 
 def test_one_int_positive_case():
