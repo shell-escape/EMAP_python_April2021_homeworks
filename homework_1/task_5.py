@@ -1,7 +1,8 @@
 """
 Given a list of integers numbers "nums".
 
-You need to find a sub-array with length less equal to "k", with maximal sum.
+You need to find a sub-array with length less equal to "k",
+    with maximal sum.
 
 The written function should return the sum of this sub-array.
 
@@ -14,14 +15,15 @@ from typing import List
 
 def find_maximal_subarray_sum(nums: List[int], k: int) -> int:
     """Find the miximal sum of sub-array with length less equal to "k".
-       Based on Kadane's algorithm [https://en.wikipedia.org/wiki/Maximum_subarray_problem]
+       Based on Kadane's algorithm
+       [https://en.wikipedia.org/wiki/Maximum_subarray_problem]
 
     Args:
-        nums (List[int]): list of integers
-        k (int): sub-array length
+        nums: list of integers
+        k: sub-array length
 
     Returns:
-        int: the maximal sum
+        the maximal sum
     """
     best_sum = float("-inf")
     current_sum = 0
