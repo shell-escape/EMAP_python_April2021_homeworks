@@ -1,16 +1,16 @@
+import pytest
+
 from homework_1.sample_project.calculator.calc import check_power_of_2
 
 
-def test_positive_case():
-    """Testing that actual powers of 2 give True"""
-    assert check_power_of_2(65536)
-
-
-def test_negative_case():
-    """Testing that non-powers of 2 give False"""
-    assert not check_power_of_2(12)
-
-
-def test_zero_case():
-    """Testing that zero gives False"""
-    assert not check_power_of_2(0)
+@pytest.mark.parametrize(
+    ("number", "expected_result"),
+    [
+        pytest.param(65536, True, id="Actual power of 2 gives True"),
+        pytest.param(12, False, id="Non-power of 2 gives False"),
+        pytest.param(0, False, id="Zero gives False"),
+    ],
+)
+def test_check_power_of_2(number, expected_result):
+    """Testing check_power_of_2 function"""
+    assert check_power_of_2(number) is expected_result
