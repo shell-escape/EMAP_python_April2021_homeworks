@@ -1,5 +1,4 @@
 [flake8]
-# ignore = E203, E501, W503,  # handled by black
 
 exclude =
     *_venv
