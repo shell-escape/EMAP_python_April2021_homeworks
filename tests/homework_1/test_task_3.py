@@ -16,5 +16,5 @@ from homework_1.task_3 import find_maximum_and_minimum
 )
 def test_find_maximum_and_minimum(test_filename, expected_result, test_data_path):
     """Testing find_maximum_and_minimum function"""
-    test_file_path = test_data_path.joinpath(test_filename)
+    test_file_path = test_data_path.joinpath("homework_1", test_filename)
     assert find_maximum_and_minimum(test_file_path) == expected_result

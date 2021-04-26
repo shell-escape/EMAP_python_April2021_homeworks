@@ -43,10 +43,8 @@ def cache(func: Callable) -> Callable:
         """
         str_args = f"{args}, {kwargs}"
 
-        if str_args in cache_storage:
-            return cache_storage[str_args]
-
-        cache_storage[str_args] = func(*args, **kwargs)
+        if str_args not in cache_storage:
+            cache_storage[str_args] = func(*args, **kwargs)
 
         return cache_storage[str_args]
 

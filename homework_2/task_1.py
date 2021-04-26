@@ -7,8 +7,8 @@ Given a file containing text. Complete using only default collections:
     4) Count every non ascii char
     5) Find most common non ascii char for document
 """
-from string import printable, punctuation
 from typing import List
+from unicodedata import category
 
 
 def get_longest_diverse_words(file_path: str, encoding: str = None) -> List[str]:
@@ -23,14 +23,19 @@ def get_longest_diverse_words(file_path: str, encoding: str = None) -> List[str]
         list with 10 corresponding words
     """
     with open(file_path, encoding=encoding) as fi:
-        text = fi.read().lower()
-    cleaned_text = "".join(char for char in text if char not in punctuation)
-    words = cleaned_text.split()
+        buffer = ""
+        words_counter = {}
+        for line in fi:
+            for char in line:
+                if category(char).startswith("L"):
+                    buffer += char
+                    continue
+                if buffer:
+                    word = buffer.lower()
+                    words_counter[word] = (-len(set(word)), -len(word), word)
+                    buffer = ""
 
-    def key_for_longest_unique(word):
-        return (-len(set(word)), -len(word), word)
-
-    return sorted(words, key=key_for_longest_unique)[:10]
+    return sorted(words_counter, key=words_counter.get)[:10]
 
 
 def get_rarest_char(file_path: str, encoding: str = None) -> str:
@@ -47,8 +52,7 @@ def get_rarest_char(file_path: str, encoding: str = None) -> str:
     with open(file_path, encoding=encoding) as fi:
         for line in fi:
             for char in line:
-                if char in printable:
-                    char_counter[char] = char_counter.get(char, 0) + 1
+                char_counter[char] = char_counter.get(char, 0) + 1
     return min(char_counter, key=lambda char: (char_counter[char], char))
 
 
@@ -66,7 +70,7 @@ def count_punctuation_chars(file_path: str, encoding: str = None) -> int:
     with open(file_path, encoding=encoding) as fi:
         for line in fi:
             for char in line:
-                if char in punctuation:
+                if category(char).startswith("P"):
                     punctuation_counter += 1
     return punctuation_counter
 
@@ -108,10 +112,7 @@ def get_most_common_non_ascii_char(file_path: str, encoding: str = None) -> str:
                 if ord(char) > 128:
                     non_ascii_counter[char] = non_ascii_counter.get(char, 0) + 1
 
-    def key_for_max(char):
-        return (non_ascii_counter[char], -ord(char))
-
-    return max(non_ascii_counter, key=key_for_max)
+    return max(non_ascii_counter, key=lambda c: (non_ascii_counter[c], -ord(c)))
 
 
 if __name__ == "__main__":
@@ -130,19 +131,20 @@ if __name__ == "__main__":
     data_most_common_non_ascii_char = get_most_common_non_ascii_char(
         "data.txt", encoding="unicode_escape"
     )
+
     """
     data_longest_words:
     ['unmißverständliche', 'werkstättenlandschaft',
-    'werkstättenlandschaft', 'bevölkerungsabschub',
-    'kollektivschuldiger', 'politischstrategischen',
-    'millionenbevölkerung', 'résistancebewegungen',
-    'friedensabstimmung', 'selbstverständlich']
+    'bevölkerungsabschub', 'kollektivschuldiger',
+    'millionenbevölkerung', 'friedensabstimmung',
+    'selbstverständlich', 'kirchenverfolgung',
+    'schicksalsfiguren', 'außerordentliche']
 
     data_rarest_char:
     "("
 
     data_punctuation_count:
-    5305
+    5475
 
     data_non_ascii_count:
     2972

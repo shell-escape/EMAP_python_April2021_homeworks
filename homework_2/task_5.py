@@ -46,4 +46,4 @@ def custom_range(
         start = list_of_values.index(first_border)
         stop = list_of_values.index(second_border)
 
-    return [list_of_values[i] for i in range(start, stop, step)]
+    return list_of_values[start:stop:step]
