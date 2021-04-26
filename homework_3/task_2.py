@@ -10,7 +10,7 @@ from multiprocessing import Pool
 from typing import Iterable
 
 
-def slow_calculate(value):  # noqa
+def slow_calculate(value):
     """Some weird voodoo magic calculations"""
     time.sleep(random.randint(1, 3))  # noqa
     data = hashlib.md5(str(value).encode()).digest()  # noqa
