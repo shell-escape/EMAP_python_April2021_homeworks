@@ -72,7 +72,7 @@ class Filter:
     to some criteria
     """
 
-    def __init__(self, *functions: Callable):
+    def __init__(self, functions: Callable):
         self.functions = functions
 
     def apply(self, data: List[Any]) -> List[Any]:
@@ -90,11 +90,9 @@ def make_filter(**keywords: Dict[str, Any]) -> Filter:
     filter_funcs = []
     for key, value in keywords.items():
 
-        def func_generation(key=key, value=value):
-            def func(dictionary):
-                return dictionary[key] == value
+        def keyword_filter_func(dictionary, key=key, value=value):
+            return dictionary[key] == value if key in dictionary else False
 
-            return func
+        filter_funcs.append(keyword_filter_func)
 
-        filter_funcs.append(func_generation())
-    return Filter(*filter_funcs)
+    return Filter(filter_funcs)

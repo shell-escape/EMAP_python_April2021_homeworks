@@ -3,6 +3,7 @@ Here's a not very efficient calculation function
 that calculates something important:"""
 
 import hashlib
+import os
 import random
 import struct
 import time
@@ -38,5 +39,6 @@ def multiprocess_slow_calculate_sum(
     Returns:
         Sum of slow_calculate function of values
     """
-    with Pool(processes_number) as p:
+    processes_number = processes_number or os.cpu_count()
+    with Pool(processes=processes_number) as p:
         return sum(p.map(slow_calculate, values))

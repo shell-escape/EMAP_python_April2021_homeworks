@@ -28,6 +28,7 @@ Example::
     '2'
 """
 
+from dataclasses import dataclass
 from typing import Any, Callable
 
 
@@ -52,7 +53,17 @@ def limited_cache(times: int) -> Callable:
         Returns:
             cached function
         """
-        cache_storage, times_counter = {}, {}
+
+        @dataclass
+        class FunctionData:
+            """Dataclass to store cached function result
+            and count times that function was called"""
+
+            __slots__ = ("result", "counter")
+            result: Any
+            counter: int
+
+        cache_and_counter = {}
 
         def wrapped(*args, **kwargs) -> Any:
             """Accepts 'args' and 'kwargs' and calls 'func' or takes
@@ -63,17 +74,17 @@ def limited_cache(times: int) -> Callable:
             """
             str_args = f"{args}, {kwargs}"
 
-            if str_args in cache_storage:
-                times_counter[str_args] -= 1
-                if times_counter[str_args] == 0:
-                    del cache_storage[str_args]
-                    del times_counter[str_args]
+            if str_args in cache_and_counter:
+                cache_and_counter[str_args].counter -= 1
+                if cache_and_counter[str_args].counter == 0:
+                    del cache_and_counter[str_args]
 
-            if str_args not in cache_storage:
-                cache_storage[str_args] = func(*args, **kwargs)
-                times_counter[str_args] = times + 1
+            if str_args not in cache_and_counter:
+                cache_and_counter[str_args] = FunctionData(
+                    func(*args, **kwargs), times + 1
+                )
 
-            return cache_storage[str_args]
+            return cache_and_counter[str_args].result
 
         return wrapped
 
