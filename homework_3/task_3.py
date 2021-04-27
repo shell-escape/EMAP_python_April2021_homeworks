@@ -89,5 +89,12 @@ def make_filter(**keywords: Dict[str, Any]) -> Filter:
     """
     filter_funcs = []
     for key, value in keywords.items():
-        filter_funcs.append(lambda dictionary: dictionary[key] == value)
+
+        def func_generation(key=key, value=value):
+            def func(dictionary):
+                return dictionary[key] == value
+
+            return func
+
+        filter_funcs.append(func_generation())
     return Filter(*filter_funcs)

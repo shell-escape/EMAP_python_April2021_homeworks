@@ -21,7 +21,7 @@ def test_example_with_dicts_not_empty_result():
         {"is_dead": True, "kind": "parrot", "type": "bird", "name": "polly"},
     ]
 
-    assert make_filter(name="polly", type="bird").apply(sample_data) == sample_data[1]
+    assert make_filter(name="polly", type="bird").apply(sample_data) == [sample_data[1]]
 
 
 def test_example_with_dicts_empty_result():
@@ -36,4 +36,4 @@ def test_example_with_dicts_empty_result():
         {"is_dead": True, "kind": "parrot", "type": "bird", "name": "polly"},
     ]
 
-    assert make_filter(name="Bill", type="bird").apply(sample_data) == []
+    assert make_filter(type="bird", name="Bill").apply(sample_data) == []
