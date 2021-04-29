@@ -44,10 +44,7 @@ def count_dots_on_i(url: str) -> int:
     """
     try:
         req = Request(url)
-        i_count = 0
         with urlopen(req) as html:  # noqa
-            for line in html:
-                i_count += str(line).count("i")
-            return i_count
+            return str(html.read()).count("i")
     except URLError:
         raise ValueError(f"Unreachable {url}")

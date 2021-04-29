@@ -45,7 +45,8 @@ def test_positive_cases(file_content):
     with NamedTemporaryFile(mode="w") as fi:
         fi.write(file_content)
         fi.seek(0)
-        assert read_magic_number(fi.name) is True
+        result = read_magic_number(fi.name)
+        assert result is True
 
 
 @pytest.mark.parametrize(
@@ -62,4 +63,5 @@ def test_negative_cases(file_content):
     with NamedTemporaryFile(mode="w") as fi:
         fi.write(file_content)
         fi.seek(0)
-        assert read_magic_number(fi.name) is False
+        result = read_magic_number(fi.name)
+        assert result is False

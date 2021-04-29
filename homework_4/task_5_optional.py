@@ -39,7 +39,6 @@ def fizzbuzz(n: int) -> Generator:
     ['11', 'fizz', '13', '14', 'fizzbuzz']
 
     """
-    dividers = ((3, "fizz"), (5, "buzz"))
     for num in range(1, n + 1):
-        fizzbuzz = [word for div, word in dividers if num % div == 0]
-        yield "".join(fizzbuzz) if fizzbuzz else str(num)
+        fizzbuzz = (num % 3 == 0) * "fizz" + (num % 5 == 0) * "buzz"
+        yield fizzbuzz or str(num)

@@ -23,4 +23,6 @@ def test_common_case(monkeypatch):
     mock = MagicMock(return_value=StringIO(content))
     monkeypatch.setattr("homework_4.task_2_mock_input.Request", mock)
     monkeypatch.setattr("homework_4.task_2_mock_input.urlopen", mock)
-    assert count_dots_on_i("it doesn't matter what is here") == 4
+    result = count_dots_on_i("it doesn't matter what is here")
+    assert mock.call_count == 2
+    assert result == 4
