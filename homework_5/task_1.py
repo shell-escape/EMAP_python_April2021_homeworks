@@ -39,6 +39,7 @@ PEP8 соблюдать строго.
 ответственно - давать логичные подходящие имена.
 """
 from datetime import datetime, timedelta
+from typing import Optional
 
 
 class Homework:
@@ -47,12 +48,17 @@ class Homework:
     Attributes:
         text: text of the homework task.
         deadline: the number of days available for task completing.
+        created: exact time of instance creation
+
+    Args:
+        text: text of the homework task.
+        deadline: the number of days available for task completing.
     """
 
     def __init__(self, text: str, deadline: int):
         self.text = text
         self.deadline = timedelta(days=deadline)
-        self.created = datetime.now()
+        self.created: datetime = datetime.now()
 
     def is_active(self) -> bool:
         """Check if the time since object creation
@@ -70,6 +76,10 @@ class Student:
     Attributes:
         last_name: student surname.
         first_name: student name.
+
+    Args:
+        last_name: student surname.
+        first_name: student name.
     """
 
     def __init__(self, last_name: str, first_name: str):
@@ -77,7 +87,7 @@ class Student:
         self.first_name = first_name
 
     @staticmethod
-    def do_homework(homework: Homework) -> Homework or None:
+    def do_homework(homework: Homework) -> Optional[Homework]:
         """Returns 'homework' if deadline is not exeeded,
         else None and prints "You are late".
         """
@@ -92,6 +102,10 @@ class Teacher:
     Attributes:
         last_name: teacher surname.
         first_name: teacher name.
+
+    Args:
+        last_name: student surname.
+        first_name: student name.
     """
 
     def __init__(self, last_name: str, first_name: str):
