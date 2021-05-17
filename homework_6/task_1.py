@@ -23,29 +23,35 @@ def instances_counter(cls: Type):
     returns the number of instances before reset.
 
     Returns:
-        Class with added methods.
+        The same class with added methods.
     """
 
-    class InstancesCounter(cls):
-        """Class that counts instances, inherited from cls."""
+    old_init = cls.__init__
+    counter = 0
 
-        _counter = 0
+    def new_init(self, *args, **kwargs):
+        nonlocal counter
+        counter += 1
+        old_init(self, *args, **kwargs)
 
-        def __init__(self, *args, **kwargs):
-            InstancesCounter._counter += 1
-            super().__init__(*args, **kwargs)
+    cls.__init__ = new_init
 
-        @classmethod
-        def get_created_instances(cls) -> int:
-            return InstancesCounter._counter
+    @classmethod
+    def get_created_instances(cls) -> int:
+        return counter
 
-        @classmethod
-        def reset_instances_counter(cls) -> int:
-            _counter_before_reset = InstancesCounter._counter
-            InstancesCounter._counter = 0
-            return _counter_before_reset  # noqa
+    cls.get_created_instances = get_created_instances
 
-    return InstancesCounter
+    @classmethod
+    def reset_instances_counter(cls) -> int:
+        nonlocal counter
+        counter_before_reset = counter
+        counter = 0
+        return counter_before_reset  # noqa
+
+    cls.reset_instances_counter = reset_instances_counter
+
+    return cls
 
 
 @instances_counter

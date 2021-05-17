@@ -1,4 +1,19 @@
-from homework_6.task_1 import User
+from homework_6.task_1 import User, instances_counter
+
+
+@instances_counter
+class HelperUserClass:
+    """Class to test __init__() method"""
+
+    def __init__(self, login):
+        self.login = login
+
+
+def test_init_works_right():
+    """Testing that __init__() method is properly saved"""
+    user = HelperUserClass("login")
+
+    assert user.login == "login"
 
 
 def test_instances_counter():

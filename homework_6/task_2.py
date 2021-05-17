@@ -55,18 +55,12 @@ PEP8 соблюдать строго.
 
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Optional
 
 
 class DeadlineError(Exception):
-    """Exception that raises if deadline is exceeded.
+    """Exception that raises if deadline is exceeded."""
 
-    Args:
-        message: error message.
-    """
-
-    def __init__(self, message: str = "DeadlineError"):
-        super().__init__(message)
+    pass
 
 
 class Human:
@@ -91,7 +85,7 @@ class Homework:
 
     Attributes:
         text: text of the homework task.
-        deadline: the number of days available for task completing.
+        available_time: the time available for task completing.
         created: exact time of instance creation.
 
     Args:
@@ -101,7 +95,7 @@ class Homework:
 
     def __init__(self, text: str, deadline: int):
         self.text = text
-        self.deadline = timedelta(days=deadline)
+        self.available_time = timedelta(days=deadline)
         self.created = datetime.now()
 
     def is_active(self) -> bool:
@@ -111,7 +105,7 @@ class Homework:
         Returns:
             True if time does not exceed the deadline else False.
         """
-        return datetime.now() - self.created < self.deadline
+        return datetime.now() - self.created < self.available_time
 
 
 class Student(Human):
@@ -166,7 +160,8 @@ class Teacher(Human):
 
     homework_done = defaultdict(list)
 
-    def create_homework(self, text: str, deadline: int) -> Homework:
+    @staticmethod
+    def create_homework(text: str, deadline: int) -> Homework:
         """Create a 'Homework' object.
 
         args:
@@ -175,7 +170,8 @@ class Teacher(Human):
         """
         return Homework(text, deadline)
 
-    def check_homework(self, homework_result: HomeworkResult) -> bool:
+    @classmethod
+    def check_homework(cls, homework_result: HomeworkResult) -> bool:
         """Returns True and adds 'homework_result' in 'homework_done'
         attribute if 'homework_result' solution is longer than
         5 symbols. Returns False otherwise.
@@ -188,12 +184,12 @@ class Teacher(Human):
             and False otherwise.
         """
         if len(homework_result.solution) > 5:
-            Teacher.homework_done[homework_result.homework].append(homework_result)
+            cls.homework_done[homework_result.homework].append(homework_result)
             return True
         return False
 
-    @staticmethod
-    def reset_results(homework: Optional[Homework] = None):
+    @classmethod
+    def reset_results(cls, homework: Homework = None):
         """Delete 'homework' from 'homework_done' if 'homework'
         is passed. Else completely reset 'homework_done'.
 
@@ -201,9 +197,9 @@ class Teacher(Human):
             homework: a homework to delete from 'homework_done'.
         """
         if homework is not None:
-            del Teacher.homework_done[homework]
+            del cls.homework_done[homework]
             return
-        Teacher.homework_done = defaultdict(list)
+        cls.homework_done = defaultdict(list)
 
 
 if __name__ == "__main__":
