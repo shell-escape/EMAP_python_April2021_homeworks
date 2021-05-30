@@ -50,5 +50,26 @@ def find_occurrences(tree: dict, element: Any) -> int:
     return occurrences
 
 
+def find_occurrences_recursive(tree: dict, element: Any) -> int:
+    """Find the number of occurrences of the element in the tree.
+
+    Args:
+        tree: tree to find element in.
+        element: element to find.
+
+    Returns:
+        the number of occurrences.
+    """
+    if tree == element:
+        return 1
+    if isinstance(tree, dict):
+        return sum(
+            find_occurrences_recursive(value, element) for value in tree.values()
+        )
+    if isinstance(tree, (list, set, tuple)):
+        return sum(find_occurrences_recursive(el, element) for el in tree)
+    return 0
+
+
 if __name__ == "__main__":
     print(find_occurrences(example_tree, "RED"))  # noqa

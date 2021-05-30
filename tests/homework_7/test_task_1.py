@@ -1,12 +1,14 @@
-from homework_7.task_1 import find_occurrences
+from homework_7.task_1 import find_occurrences, find_occurrences_recursive
 
 
 def test_empty_tree():
     """Testing that there are no occurrences in an empty tree."""
     empty_tree = {}
-    occurrences = find_occurrences(empty_tree, "smth")
+    occurrences_stack = find_occurrences(empty_tree, "smth")
+    occurrences_recursive = find_occurrences_recursive(empty_tree, "smth")
 
-    assert occurrences == 0
+    assert occurrences_stack == 0
+    assert occurrences_recursive == 0
 
 
 def test_example():
@@ -27,9 +29,11 @@ def test_example():
         },
         "fourth": "RED",
     }
-    occurrences = find_occurrences(example_tree, "RED")
+    occurrences_stack = find_occurrences(example_tree, "RED")
+    occurrences_recursive = find_occurrences_recursive(example_tree, "RED")
 
-    assert occurrences == 6
+    assert occurrences_stack == 6
+    assert occurrences_recursive == 6
 
 
 def test_element_is_list():
@@ -50,9 +54,11 @@ def test_element_is_list():
         },
         "fourth": "RED",
     }
-    occurrences = find_occurrences(tree, ["RED", "BLUE"])
+    occurrences_stack = find_occurrences(tree, ["RED", "BLUE"])
+    occurrences_recursive = find_occurrences_recursive(tree, ["RED", "BLUE"])
 
-    assert occurrences == 3
+    assert occurrences_stack == 3
+    assert occurrences_recursive == 3
 
 
 def test_element_is_dict():
@@ -73,6 +79,8 @@ def test_element_is_dict():
         },
         "fourth": "RED",
     }
-    occurrences = find_occurrences(tree, {"nested_key": "RED"})
+    occurrences_stack = find_occurrences(tree, {"nested_key": "RED"})
+    occurrences_recursive = find_occurrences_recursive(tree, {"nested_key": "RED"})
 
-    assert occurrences == 4
+    assert occurrences_stack == 4
+    assert occurrences_recursive == 4
