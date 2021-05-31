@@ -128,9 +128,9 @@ class TableData:
         con.close()
 
     def __len__(self) -> int:
-        with self.connection() as con:
-            con.execute(f"SELECT count(*) as len FROM {self.table_name}")  # noqa
-            return con.fetchone()["len"]
+        with self.connection() as cursor:
+            cursor.execute(f"SELECT count(*) as len FROM {self.table_name}")  # noqa
+            return cursor.fetchone()["len"]
 
     def __getitem__(self, item: str) -> Any:
         with self.connection() as cursor:
