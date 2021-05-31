@@ -114,14 +114,8 @@ class TableData:
     def connection(self) -> ContextManager:
         """Context manager for sqlite3 connection."""
 
-        def dict_factory(cursor, row):
-            d = {}
-            for idx, col in enumerate(cursor.description):
-                d[col[0]] = row[idx]
-            return d
-
         con = sqlite3.connect(self.database_name)
-        con.row_factory = dict_factory
+        con.row_factory = sqlite3.Row
         cur = con.cursor()
         yield cur
         con.commit()

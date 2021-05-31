@@ -31,7 +31,7 @@ def test_getitem_positive(presidents):
     when the item exists"""
     yeltsin_row = presidents["Yeltsin"]
 
-    assert yeltsin_row == {"name": "Yeltsin", "age": 999, "country": "Russia"}
+    assert tuple(yeltsin_row) == ("Yeltsin", 999, "Russia")
 
 
 def test_getitem_negative(presidents):
