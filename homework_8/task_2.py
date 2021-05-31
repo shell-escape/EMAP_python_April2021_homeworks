@@ -86,18 +86,10 @@ from contextlib import contextmanager
 from typing import Any, ContextManager, Generator
 
 
-@contextmanager
-def connection(database_name: str) -> ContextManager:
-    """Context manager for sqlite3 connection.
+class InjectionError(Exception):
+    """Exception that raises when table name is not valid"""
 
-    Args:
-        database_name: database name
-    """
-    con = sqlite3.connect(database_name)
-    cur = con.cursor()
-    yield cur
-    con.commit()
-    con.close()
+    pass
 
 
 class TableData:
@@ -113,23 +105,48 @@ class TableData:
     """
 
     def __init__(self, database_name: str, table_name: str):
+        if not table_name.isidentifier():
+            raise InjectionError("Table name is not valid.")
         self.database_name = database_name
         self.table_name = table_name
 
+    @contextmanager
+    def connection(self) -> ContextManager:
+        """Context manager for sqlite3 connection."""
+
+        def dict_factory(cursor, row):
+            d = {}
+            for idx, col in enumerate(cursor.description):
+                d[col[0]] = row[idx]
+            return d
+
+        con = sqlite3.connect(self.database_name)
+        con.row_factory = dict_factory
+        cur = con.cursor()
+        yield cur
+        con.commit()
+        con.close()
+
     def __len__(self) -> int:
-        with connection(self.database_name) as cursor:
-            cursor.execute(f"SELECT count(*) FROM {self.table_name}")  # noqa
-            return cursor.fetchone()[0]
+        with self.connection() as con:
+            con.execute(f"SELECT count(*) as len FROM {self.table_name}")  # noqa
+            return con.fetchone()["len"]
 
     def __getitem__(self, item: str) -> Any:
-        with connection(self.database_name) as cursor:
-            command = f"SELECT * FROM {self.table_name} WHERE name='{item}'"  # noqa
-            cursor.execute(command)
-            return cursor.fetchone()
+        with self.connection() as cursor:
+            command = f"SELECT * FROM {self.table_name} WHERE name=:name"  # noqa
+            cursor.execute(command, {"name": item})
+            result = cursor.fetchone()
+            if result is None:
+                raise ValueError(f"There is no item {item}")
+            return result
 
     def __contains__(self, item: str) -> bool:
-        return bool(self[item])
+        try:
+            return bool(self[item])
+        except ValueError:
+            return False
 
     def __iter__(self) -> Generator:
-        with connection(self.database_name) as cursor:
+        with self.connection() as cursor:
             yield from cursor.execute(f"SELECT * from {self.table_name}")  # noqa

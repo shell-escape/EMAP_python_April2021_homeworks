@@ -32,6 +32,12 @@ into memory.
 from keyword import iskeyword
 
 
+class ParserError(Exception):
+    """Exception than raises when file data have wrong syntax."""
+
+    pass
+
+
 class KeyValueStorage:
     """Class that takes attributes from a file.
 
@@ -45,9 +51,11 @@ class KeyValueStorage:
     def __init__(self, filepath: str):
         with open(filepath) as f:
             for line in f:
+                if line.count("=") != 1:
+                    raise ParserError("Each line must contain only one '=' sign.")
                 key, value = line.strip().split("=")
                 if iskeyword(key) or not key.isidentifier():
-                    raise ValueError("Value cannot be assigned to an attribute")
+                    raise ValueError("Value cannot be assigned to an attribute.")
                 if value.isdigit():
                     value = int(value)
                 setattr(self, key, value)

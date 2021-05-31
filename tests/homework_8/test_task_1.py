@@ -1,6 +1,6 @@
 import pytest
 
-from homework_8.task_1 import KeyValueStorage
+from homework_8.task_1 import KeyValueStorage, ParserError
 
 
 def test_positive_case(test_data_path):
@@ -21,5 +21,15 @@ def test_negative_case(test_data_path):
     test_filename = "task_1_negative_case.txt"
     test_file_path = test_data_path.joinpath("homework_8", test_filename)
 
-    with pytest.raises(ValueError, match="Value cannot be assigned to an attribute"):
+    with pytest.raises(ValueError, match="Value cannot be assigned to an attribute."):
+        KeyValueStorage(test_file_path)
+
+
+def test_parser_error(test_data_path):
+    """Testing that ParserError raises when file contains wrong number
+    of '=' sign in any line."""
+    test_filename = "task_1_error_case.txt"
+    test_file_path = test_data_path.joinpath("homework_8", test_filename)
+
+    with pytest.raises(ParserError, match="Each line must contain only one '=' sign."):
         KeyValueStorage(test_file_path)
