@@ -34,3 +34,18 @@ def test_common_case(test_data_path):
     sorted_list = list(merge_sorted_files(test_file_paths))
 
     assert sorted_list == [1, 2, 3, 5, 6, 8, 10, 100]
+
+
+def test_case_with_equal_integers(test_data_path):
+    """Testing merge_sorted_files on common case."""
+    test_filenames = [
+        "task_1_sorted_file_4.txt",
+        "task_1_sorted_file_5.txt",
+    ]
+    test_file_paths = [
+        test_data_path.joinpath("homework_9", test_filename)
+        for test_filename in test_filenames
+    ]
+    sorted_list = list(merge_sorted_files(test_file_paths))
+
+    assert sorted_list == [1, 1, 2, 2, 3, 3, 4]

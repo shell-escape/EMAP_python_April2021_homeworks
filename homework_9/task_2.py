@@ -20,18 +20,18 @@ class Supressor:
         exception: exception to supress.
     """
 
-    def __init__(self, exception: Exception):
-        self.exception = exception
+    def __init__(self, *exceptions):
+        self.exceptions = exceptions
 
     def __enter__(self):
         pass
 
     def __exit__(self, exc_type, exc_value, traceback):
-        return exc_type == self.exception
+        return exc_type in self.exceptions
 
 
 @contextmanager
-def supressor(exception):
+def supressor(*exceptions):
     """A context manager that supresses passed exception.
 
     Args:
@@ -39,5 +39,5 @@ def supressor(exception):
     """
     try:
         yield
-    except exception:
+    except exceptions:
         pass

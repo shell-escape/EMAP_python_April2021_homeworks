@@ -12,7 +12,6 @@ For dir with two files from hw1.py:
 6
 
 """
-import os
 from pathlib import Path
 from typing import Callable
 
@@ -38,12 +37,10 @@ def universal_file_counter(
     """
     result = 0
     tokenizer = tokenizer or (lambda line: (line,))
-    for root, _, files in os.walk(dir_path):
-        filtered_files = [file for file in files if file.endswith(file_extension)]
-        for file in filtered_files:
-            with open(os.path.join(root, file)) as fi:
-                for line in fi:
-                    result += len(list(tokenizer(line)))
-        if not walk:
-            break
+    search = dir_path.rglob if walk else dir_path.glob
+    files = (path for path in search(f"*{file_extension}") if path.is_file())
+    for file in files:
+        with open(file) as fi:
+            for line in fi:
+                result += len(list(tokenizer(line)))
     return result
