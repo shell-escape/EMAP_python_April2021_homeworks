@@ -7,3 +7,4 @@ pytest-timeout
 requests
 aiohttp
 beautifulsoup4
+lxml
