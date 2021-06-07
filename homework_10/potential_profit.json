@@ -1,0 +1,52 @@
+[
+    {
+        "code": "AMZN",
+        "name": "Amazon",
+        "potential_profit": 1116.26
+    },
+    {
+        "code": "GOOG",
+        "name": "Alphabet C (ex Google)",
+        "potential_profit": 1111.14
+    },
+    {
+        "code": "GOOGL",
+        "name": "Alphabet A (ex Google)",
+        "potential_profit": 1079.73
+    },
+    {
+        "code": "TSLA",
+        "name": "Tesla",
+        "potential_profit": 727.15
+    },
+    {
+        "code": "CMG",
+        "name": "Chipotle Mexican Grill Inc.",
+        "potential_profit": 615.02
+    },
+    {
+        "code": "MTD",
+        "name": "Mettler-Toledo International Inc.",
+        "potential_profit": 594.99
+    },
+    {
+        "code": "AZO",
+        "name": "AutoZone Inc.",
+        "potential_profit": 467.52
+    },
+    {
+        "code": "ALGN",
+        "name": "Align Technology Inc.",
+        "potential_profit": 409.96
+    },
+    {
+        "code": "LRCX",
+        "name": "Lam Research Corp.",
+        "potential_profit": 399.29
+    },
+    {
+        "code": "BLK",
+        "name": "BlackRock Inc.",
+        "potential_profit": 374.28
+    }
+]
