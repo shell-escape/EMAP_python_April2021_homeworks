@@ -13,7 +13,5 @@ jobs:
         uses: actions/checkout@v2
       - name: Run script
         run: |
-          pip install pytest
-          pip install pytest-timeout
-          pip install aiohttp
+          pip install -r requirements.txt
           py.test tests
