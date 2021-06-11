@@ -1,23 +1,23 @@
 [
     {
-        "code": "AMZN",
-        "name": "Amazon",
-        "potential_profit": 1116.26
-    },
-    {
         "code": "GOOG",
         "name": "Alphabet C (ex Google)",
-        "potential_profit": 1111.14
+        "potential_profit": 1179.98
     },
     {
         "code": "GOOGL",
         "name": "Alphabet A (ex Google)",
-        "potential_profit": 1079.73
+        "potential_profit": 1090.07
+    },
+    {
+        "code": "AMZN",
+        "name": "Amazon",
+        "potential_profit": 1050.04
     },
     {
         "code": "TSLA",
         "name": "Tesla",
-        "potential_profit": 727.15
+        "potential_profit": 718.64
     },
     {
         "code": "CMG",

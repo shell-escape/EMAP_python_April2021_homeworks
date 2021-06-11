@@ -38,10 +38,8 @@ For requesting aiohttp
 
 import asyncio
 import json
-import os
-import shutil
-import time
 from concurrent.futures import ProcessPoolExecutor
+from typing import Generator, List, Tuple
 
 import aiohttp
 import requests
@@ -61,17 +59,68 @@ def get_dollar_rate() -> float:
     return float(dollar_value.string.replace(",", "."))
 
 
-async def save_companies_urls(url: str):
-    """Add links and 1-year growh of s&p companies from page
-    given by 'url' to global 'companies_information' dictionary.
+class CompaniesStorage:
+    """Class to store information about S&P 500 companies.
 
     Args:
-        url: the link to markets.businessinsider.com s&p page.
+        main_url: url to markets.businessinsider.com S&P 500 page.
+        pages_number: the number of pages with companies.
+
+    Attributes:
+        main_url: url to markets.businessinsider.com S&P 500 page.
+        pages_number: the number of pages with companies.
+        main_pages: main pages htmls.
+        companies_pages: companies pages htmls.
+        companies: information about companies.
     """
-    async with aiohttp.ClientSession() as session:
+
+    def __init__(self, main_url: str, pages_number: int):
+        self.main_url = main_url
+        self.pages_number = pages_number
+        self.main_pages = []
+        self.companies_pages = []
+        self.companies = {}
+
+    def get_main_pages_urls(self) -> Generator[str, None, None]:
+        """Generates urls of main pages.
+
+        Yields:
+            main pages urls.
+        """
+        return (f"{self.main_url}p={page}" for page in range(1, self.pages_number + 1))
+
+    async def _save_html(
+        self, url: str, storage: List, session: aiohttp.ClientSession, name=None
+    ):
+        """Appends HTML from 'url' to 'storage'. If 'name' is not None,
+        appends it along with HTML.
+
+        Args:
+            url: url to html to save.
+            storage: list to save the html.
+            session: ClientSession object.
+            name: if not None, also is appended to storage.
+        """
         async with session.get(url) as response:
             text = await response.read()
-            soup = BeautifulSoup(text, "html.parser")
+            what_to_save = (name, text) if name else text
+            storage.append(what_to_save)
+
+    async def download_main_pages(self):
+        """Saves html pages of all s&p companies from
+        markets.businessinsider.com."""
+        async with aiohttp.ClientSession() as session:
+            main_pages_tasks = [
+                asyncio.create_task(self._save_html(url, self.main_pages, session))
+                for url in self.get_main_pages_urls()
+            ]
+            await asyncio.gather(*main_pages_tasks)
+
+    def parse_main_pages(self):
+        """Parses main pages and adds link and growth of companies
+        to self.companies."""
+        for main_page in self.main_pages:
+            soup = BeautifulSoup(main_page, "html.parser")
             for company_block in soup.find_all("tr")[1:]:
                 company_line = company_block.find("a")
                 company_name = company_line.get("title")
@@ -80,172 +129,145 @@ async def save_companies_urls(url: str):
                 company_growth = float(
                     company_block.find_all("span")[9].text.strip("%").replace(",", "")
                 )
-                companies_information[company_name] = {
+                self.companies[company_name] = {
                     "link": company_link,
                     "growth": company_growth,
                 }
 
-
-async def download_html(url: str, filename: str, session: aiohttp.ClientSession):
-    """Download html from 'url' to file with 'filename' name.
-
-    Args:
-        url: link to download html.
-        filename: file name to save html.
-        session: session object.
-    """
-    async with session.get(url) as response:
-        text = await response.read()
-        soup = BeautifulSoup(text, "html.parser")
-        with open(filename, "w") as fi:
-            fi.write(str(soup))
-
-
-async def download_companies_htmls():
-    """Saves html pages of all s&p companies from
-    markets.businessinsider.com."""
-
-    if os.path.exists(tmp_dir):
-        shutil.rmtree(tmp_dir)
-    os.makedirs(tmp_dir)
-
-    pages = range(1, 11)
-    urls = [
-        f"https://markets.businessinsider.com/index/components/s&p_500?p={page}"
-        for page in pages
-    ]
-
-    async with aiohttp.ClientSession() as session:
-        main_pages_tasks = [
-            asyncio.create_task(save_companies_urls(url)) for url in urls
-        ]
-        await asyncio.gather(*main_pages_tasks)
-
-        company_pages_tasks = [
-            asyncio.create_task(
-                download_html(
-                    companies_information[company]["link"],
-                    f"{tmp_dir}/{company}.html",
-                    session,
+    async def download_companies_pages(self):
+        """Saves html pages of all s&p companies from
+        markets.businessinsider.com."""
+        async with aiohttp.ClientSession() as session:
+            company_pages_tasks = [
+                asyncio.create_task(
+                    self._save_html(
+                        self.companies[company]["link"],
+                        self.companies_pages,
+                        session,
+                        name=company,
+                    )
                 )
-            )
-            for company in companies_information
-        ]
-        await asyncio.gather(*company_pages_tasks)
+                for company in self.companies
+            ]
+            await asyncio.gather(*company_pages_tasks)
 
+    @staticmethod
+    def parse_company_page(text_and_name: Tuple[str]) -> dict:
+        """Collect informaton from s&p company page:
+        name, code, price, P/E ratio and potential profit.
+        If the information about P/E ratio is absent, set it to inf.
+        If the information about potential profit is absent,
+        set it to -inf.
 
-def get_company_detailed_information(company: str) -> dict:
-    """Collect informaton from s&p company page:
-    name, code, price, P/E ratio and potential profit.
-    If the information about P/E ratio is absent, set it to inf.
-    If the information about potential profit is absent, set it to -inf.
+        Args:
+            text_and_name: text of company page and company short name.
 
-    Args:
-        company: company file name.
+        Returns:
+            dictionary with corresponding information.
+        """
 
-    Returns:
-        dictionary with corresponding information.
-    """
+        short_name, text = text_and_name
+        soup = BeautifulSoup(text, "html.parser")
+        company_dict = {}
 
-    with open(f"{tmp_dir}/{company}.html") as fi:
-        soup = BeautifulSoup(fi.read(), "html.parser")
+        name_chunk = soup.find("span", class_="price-section__label")
+        company_name = name_chunk.text.strip()
+        company_dict["name"] = company_name
+        company_dict[company_name] = short_name
 
-    company_dict = {}
+        code_chunk = soup.find("span", class_="price-section__category")
+        company_dict["code"] = code_chunk.find("span").text.lstrip(", ")
 
-    name_chunk = soup.find("span", class_="price-section__label")
-    company_dict["name"] = name_chunk.text.strip()
-
-    code_chunk = soup.find("span", class_="price-section__category")
-    company_dict["code"] = code_chunk.find("span").text.lstrip(", ")
-
-    price_chunk = soup.find("span", class_="price-section__current-value")
-    company_dict["price"] = round(
-        float(price_chunk.text.replace(",", "")) * dollar_rate, 2
-    )
-
-    try:
-        pe_chunk = soup.find(
-            text="P/E Ratio", class_="snapshot__header"
-        ).previous_sibling
-        company_dict["pe"] = float(pe_chunk.strip().replace(",", ""))
-    except AttributeError:
-        company_dict["pe"] = float("inf")
-
-    try:
-        low_profit_chunk = soup.find(
-            text="52 Week Low", class_="snapshot__header"
-        ).previous_sibling
-        low_profit = float(low_profit_chunk.strip().replace(",", ""))
-        high_profit_chunk = soup.find(
-            text="52 Week High", class_="snapshot__header"
-        ).previous_sibling
-        high_profit = float(high_profit_chunk.strip().replace(",", ""))
-        company_dict["potential_profit"] = round(high_profit - low_profit, 2)
-    except AttributeError:
-        company_dict["potential_profit"] = float("-inf")
-
-    return company_dict
-
-
-def get_companies_detailed_information():
-    """Apply 'get_company_detailed_information' function to all
-    companies using multiprocessing."""
-    with ProcessPoolExecutor() as pool:
-        result = pool.map(get_company_detailed_information, companies_information)
-        for company, company_dict in zip(companies_information, result):
-            companies_information[company] |= company_dict
-
-
-def get_index_result(index: str):
-    """Select top 10 companies in 'index' indicator.
-
-    Args:
-        index: company indicator.
-
-    Returns:
-        dictionary with top 10 companies and corresponding information.
-    """
-
-    companies_result = []
-
-    top_companies = sorted(
-        companies_information,
-        key=lambda x: companies_information[x][index],
-        reverse=(index != "pe"),
-    )[:10]
-
-    for company in top_companies:
-        companies_result.append(
-            {
-                "code": companies_information[company]["code"],
-                "name": companies_information[company]["name"],
-                index: companies_information[company][index],
-            }
+        price_chunk = soup.find("span", class_="price-section__current-value")
+        company_dict["price"] = round(
+            float(price_chunk.text.replace(",", "")) * get_dollar_rate(), 2
         )
 
-    return companies_result
+        try:
+            pe_chunk = soup.find(
+                text="P/E Ratio", class_="snapshot__header"
+            ).previous_sibling
+            company_dict["pe"] = float(pe_chunk.strip().replace(",", ""))
+        except AttributeError:
+            company_dict["pe"] = float("inf")
+
+        try:
+            low_profit_chunk = soup.find(
+                text="52 Week Low", class_="snapshot__header"
+            ).previous_sibling
+            low_profit = float(low_profit_chunk.strip().replace(",", ""))
+            high_profit_chunk = soup.find(
+                text="52 Week High", class_="snapshot__header"
+            ).previous_sibling
+            high_profit = float(high_profit_chunk.strip().replace(",", ""))
+            company_dict["potential_profit"] = round(high_profit - low_profit, 2)
+        except AttributeError:
+            company_dict["potential_profit"] = float("-inf")
+
+        return company_dict
+
+    def parse_companies_pages(self):
+        """Apply 'get_company_detailed_information' function to all
+        companies using multiprocessing and adds its result
+        to self.companies."""
+        with ProcessPoolExecutor() as pool:
+            result = pool.map(
+                CompaniesStorage.parse_company_page,
+                self.companies_pages,
+            )
+        for company_dict in result:
+            full_name = company_dict["name"]
+            short_name = company_dict[full_name]
+            self.companies[short_name] |= company_dict
+
+    def get_index_result(self, index: str):
+        """Select top 10 companies in 'index' indicator.
+
+        Args:
+            index: company indicator.
+
+        Returns:
+            dictionary with top 10 companies
+            and corresponding information.
+        """
+
+        companies_result = []
+
+        top_companies = sorted(
+            self.companies,
+            key=lambda company: self.companies[company][index],
+            reverse=(index != "pe"),
+        )[:10]
+
+        for company in top_companies:
+            companies_result.append(
+                {
+                    "code": self.companies[company]["code"],
+                    "name": self.companies[company]["name"],
+                    index: self.companies[company][index],
+                }
+            )
+
+        return companies_result
+
+    def generate_jsons(self, indices: Tuple[str]):
+        """Starts full process for top 10 jsons generation.
+
+        Args:
+            indices: indices to generate jsons.
+        """
+        asyncio.run(self.download_main_pages())
+        self.parse_main_pages()
+        asyncio.run(self.download_companies_pages())
+        self.parse_companies_pages()
+
+        for index in indices:
+            with open(f"{index}.json", "w") as fi:
+                json.dump(storage.get_index_result(index), fi, indent=4)
 
 
 if __name__ == "__main__":
-
-    companies_information = {}
-    tmp_dir = "./_companies"
-
-    t = time.time()
-    asyncio.run(download_companies_htmls())
-
-    print("downloading:", time.time() - t)  # noqa
-
-    dollar_rate = get_dollar_rate()
-
-    t = time.time()
-
-    get_companies_detailed_information()
-
-    print("parsing:", time.time() - t)  # noqa
-
-    shutil.rmtree(tmp_dir)
-
-    for index in ("price", "pe", "growth", "potential_profit"):
-        with open(f"{index}.json", "w") as fi:
-            json.dump(get_index_result(index), fi, indent=4)
+    main_url = "https://markets.businessinsider.com/index/components/s&p_500?"
+    storage = CompaniesStorage(main_url, 10)
+    indices = ("price", "pe", "growth", "potential_profit")
+    storage.generate_jsons(indices)

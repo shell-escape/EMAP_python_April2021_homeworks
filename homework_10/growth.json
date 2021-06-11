@@ -1,28 +1,18 @@
 [
     {
-        "code": "FCX",
-        "name": "Freeport-McMoRan Inc",
-        "growth": 357.71
-    },
-    {
         "code": "LB",
         "name": "L Brands Inc",
         "growth": 347.65
     },
     {
-        "code": "IVZ",
-        "name": "Invesco Ltd",
-        "growth": 262.72
+        "code": "FCX",
+        "name": "Freeport-McMoRan Inc",
+        "growth": 266.07
     },
     {
         "code": "TSLA",
         "name": "Tesla",
-        "growth": 242.67
-    },
-    {
-        "code": "GPS",
-        "name": "Gap Inc.",
-        "growth": 237.27
+        "growth": 220.83
     },
     {
         "code": "TPR",
@@ -35,18 +25,28 @@
         "growth": 171.64
     },
     {
-        "code": "DXC",
-        "name": "DXC Technology",
-        "growth": 156.6
+        "code": "ENPH",
+        "name": "Enphase Energy Inc",
+        "growth": 159.87
     },
     {
-        "code": "F",
-        "name": "Ford Motor Co.",
-        "growth": 147.57
+        "code": "IVZ",
+        "name": "Invesco Ltd",
+        "growth": 150.69
     },
     {
-        "code": "FDX",
-        "name": "FedEx Corp.",
-        "growth": 142.96
+        "code": "PWR",
+        "name": "Quanta Services Inc.",
+        "growth": 142.81
+    },
+    {
+        "code": "PVH",
+        "name": "PVH Corp.",
+        "growth": 140.69
+    },
+    {
+        "code": "UAA",
+        "name": "Under Armour Inc.",
+        "growth": 130.43
     }
 ]
