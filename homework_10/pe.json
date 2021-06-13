@@ -1,0 +1,52 @@
+[
+    {
+        "code": "VNO",
+        "name": "Vornado Realty Trust",
+        "pe": -893.45
+    },
+    {
+        "code": "CVX",
+        "name": "Chevron Corp.",
+        "pe": -427.45
+    },
+    {
+        "code": "DVN",
+        "name": "Devon Energy Corp.",
+        "pe": -167.13
+    },
+    {
+        "code": "XOM",
+        "name": "ExxonMobil Corp. (Exxon Mobil)",
+        "pe": -125.36
+    },
+    {
+        "code": "PSX",
+        "name": "Phillips 66",
+        "pe": -76.53
+    },
+    {
+        "code": "UAA",
+        "name": "Under Armour Inc.",
+        "pe": -64.5
+    },
+    {
+        "code": "INCY",
+        "name": "Incyte Corp.",
+        "pe": -63.09
+    },
+    {
+        "code": "TWTR",
+        "name": "Twitter",
+        "pe": -62.1
+    },
+    {
+        "code": "PVH",
+        "name": "PVH Corp.",
+        "pe": -44.03
+    },
+    {
+        "code": "COP",
+        "name": "ConocoPhillips",
+        "pe": -40.25
+    }
+]
