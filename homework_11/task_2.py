@@ -39,17 +39,17 @@ class Order:
 
     Args:
         price: initial price.
-        discount: a function that represents discount program.
+        discount_program: a function that represents discount program.
 
     Attributes:
         price: initial price.
-        _discount: a function that represents discount program.
+        discount_program: a function that represents discount program.
     """
 
-    def __init__(self, price: float, discount: Callable):
+    def __init__(self, price: float, discount_program: Callable):
         self.price = price
-        self._discount = discount
+        self.discount_program = discount_program
 
     def final_price(self) -> float:
-        """Returns the price after the discount program is applied"""
-        return self.price - self.price * self._discount()
+        """Returns the price after the discount program is applied."""
+        return self.discount_program(self)

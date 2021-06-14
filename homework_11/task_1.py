@@ -42,6 +42,19 @@ class SimplifiedEnum(type):
     class attributes."""
 
     def __new__(cls, class_name: str, bases: Tuple[type], attrs: dict) -> type:
-        for attr in attrs[f"_{class_name}__keys"]:
-            attrs[attr] = attr
-        return super().__new__(cls, class_name, bases, attrs)
+        try:
+            keys = attrs[f"_{class_name}__keys"]
+        except KeyError:
+            keys = {}
+            print("You should probably add '__key' attribute in your class")  # noqa
+        for key in keys:
+            attrs[key] = key
+        new_cls = super().__new__(cls, class_name, bases, attrs)
+        new_cls._keys = keys
+        return new_cls
+
+    def __len__(cls):
+        return len(cls._keys)
+
+    def __iter__(cls):
+        return iter(cls._keys)
