@@ -28,4 +28,5 @@ def get_report():
         write_csv(qs, csv_file, field_header_map=headers)
 
 
-get_report()
+if __name__ == "__main__":
+    get_report()
