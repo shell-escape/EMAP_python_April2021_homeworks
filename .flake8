@@ -4,6 +4,9 @@ exclude =
     *_venv
     venv_*
     venv
+    ./homework_12/homework_12/* # Django stuff
+    ./homework_12/task/*
+
 max-cognitive-complexity = 10
 per-file-ignores =
     test*.py: S101
